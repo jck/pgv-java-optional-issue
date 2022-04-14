@@ -1,0 +1,42 @@
+plugins {
+  id "java"
+  id "com.google.protobuf" version "0.8.18"
+}
+
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
+  implementation "io.grpc:grpc-stub:${grpcVersion}"
+  implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+}
+
+protobuf {
+  protoc {
+    artifact = "com.google.protobuf:protoc:${protobufVersion}"
+  }
+
+  plugins {
+    grpc { artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}" }
+    javapgv {
+      artifact = "io.envoyproxy.protoc-gen-validate:protoc-gen-validate:${pgvVersion}"
+    }
+  }
+
+  generateProtoTasks {
+    all().each{ task ->
+      // task.generateDescriptorSet = true
+      //   task.descriptorSetOptions.includeImports = true
+        task.plugins {
+          grpc {}
+          javapgv {
+            option "lang=java"
+          }
+        }
+    }
+  }
+}
